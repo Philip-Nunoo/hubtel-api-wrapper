@@ -6,6 +6,7 @@ import com.phil.hubtelpaymentapi.HubtelVend;
 import com.phil.hubtelpaymentapi.pojos.Busy;
 import com.phil.hubtelpaymentapi.Hub.HubtelNetworks;
 import com.phil.hubtelpaymentapi.exceptions.PaymentException;
+import com.phil.hubtelpaymentapi.responses.AirtimePurchaseResponse;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,14 +28,13 @@ public class Main {
         
         try {
             /** Test airtime **/
-            hubtelPayment.purchaseAirtime("0206242008", HubtelNetworks.GH_VODAFONE, 0.2, null);
+            AirtimePurchaseResponse response = hubtelPayment.purchaseAirtime("0546140388", HubtelNetworks.GH_MTN, 0.5, null);
             
             /** Test Surfline query **/
             // Surfline surfline = hubtelPayment.getUserSurflineInfo("233255027342");
             // get the first data package. In this case 
             // surfline.setPaymentBundle(surfline.getBundles().get(0));
             // hubtelPayment.paySurflineBundle(surfline);
-            
             /** Test busy **/
             // Busy busy = hubtelPayment.getUserBusyInfo("104899");
             // System.err.println(busy);

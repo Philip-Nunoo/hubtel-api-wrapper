@@ -15,13 +15,13 @@ public class AirtimePurchaseResponse
 {
     private Double balanceAfter;
     private String customer;
-    private String commission;
+    private Double commission;
     private Double amount;
     private String description;
     private Double balanceBefore;
     private String providerId;
     private String id;
-    private String charge;
+    private Double charge;
     private String foreignId;
     private AirtimePurchaseErrorResponse errorResponse;
     
@@ -49,11 +49,11 @@ public class AirtimePurchaseResponse
         this.customer = customer;
     }
 
-    public String getCommission() {
+    public Double getCommission() {
         return commission;
     }
 
-    public void setCommission(String commission) {
+    public void setCommission(Double commission) {
         this.commission = commission;
     }
 
@@ -97,11 +97,11 @@ public class AirtimePurchaseResponse
         this.id = id;
     }
 
-    public String getCharge() {
+    public Double getCharge() {
         return charge;
     }
 
-    public void setCharge(String charge) {
+    public void setCharge(Double charge) {
         this.charge = charge;
     }
 
@@ -119,7 +119,7 @@ public class AirtimePurchaseResponse
     }
 
     public void setAttributesFromJsonObject(int code, JSONObject jSONObject) {
-        if (code < 400) {
+        if (code > 200) {
             errorResponse.setAttributesFromJsonObject(jSONObject);
         } else {
             errorResponse = null;
@@ -129,8 +129,8 @@ public class AirtimePurchaseResponse
             this.foreignId = jSONObject.getString("ForeignId");
             this.description = jSONObject.getString("Description");
             this.amount = jSONObject.getDouble("Amount");
-            this.commission = jSONObject.getString("Commission");
-            this.charge = jSONObject.getString("Charge");
+            this.commission = jSONObject.getDouble("Commission");
+            this.charge = jSONObject.getDouble("Charge");
             this.balanceBefore = jSONObject.getDouble("BalanceBefore");
             this.balanceAfter = jSONObject.getDouble("BalanceAfter");
         }
