@@ -5,9 +5,10 @@
  */
 package com.phil.hubtelpaymentapi;
 
-import com.phil.hubtelpaymentapi.Hub.DataVendors;
 import com.phil.hubtelpaymentapi.models.Surfline;
 import com.phil.hubtelpaymentapi.Hub.HubtelNetworks;
+import com.phil.hubtelpaymentapi.Hub.MtnService;
+import com.phil.hubtelpaymentapi.Hub.VodafoneService;
 import com.phil.hubtelpaymentapi.exceptions.PaymentException;
 import com.phil.hubtelpaymentapi.interfaces.PaymentInterface;
 import com.phil.hubtelpaymentapi.models.Bundle;
@@ -42,7 +43,7 @@ public class HubtelVend implements PaymentInterface {
         this.client = new OkHttpClient();
     }
 
-    private BillPaymentReceipt payTVBill(String url, HashMap<String, Object> hmap) throws IOException {
+    private BillPaymentReceipt payBill(String url, HashMap<String, Object> hmap) throws IOException {
         StringBuilder builder = new StringBuilder();
         BillPaymentReceipt dstvReceipt = new BillPaymentReceipt();
         
@@ -110,7 +111,6 @@ public class HubtelVend implements PaymentInterface {
         
         return balance;
     }
-
     
     @Override
     public AirtimePurchaseResponse purchaseAirtime(String phoneNumber, HubtelNetworks network, double amount, String foreignId) throws IOException, PaymentException {
@@ -158,8 +158,23 @@ public class HubtelVend implements PaymentInterface {
         hashMap.put("token", hubtel.getToken());
         hashMap.put("foreignId", foreignId);
         
-        return this.payTVBill(Hubtel.getDstvBillPaymentUrl(), hashMap);
+        return this.payBill(Hubtel.getDstvBillPaymentUrl(), hashMap);
         // return this.payTVBill(Hubtel.getDstvBillPaymentUrl(), account, amount, foreignId);
+    }
+    
+    @Override
+    public BillPaymentReceipt paySurflineBundle(String device, double amount, Surfline surfline, String foreignId) throws IOException {
+        HashMap<String, Object> hashMap = new HashMap<>();
+        
+        Bundle bundle = surfline.getPaymentBundle();
+        
+        hashMap.put("device", device);
+        hashMap.put("amount", amount);
+        hashMap.put("bundle", bundle.getBundle());
+        hashMap.put("token", hubtel.getToken());
+        hashMap.put("foreignId", foreignId);
+        
+        return this.payBill(Hubtel.getSurflineBundleUrl(), hashMap);
     }
 
     @Override
@@ -171,7 +186,7 @@ public class HubtelVend implements PaymentInterface {
         hashMap.put("token", hubtel.getToken());
         hashMap.put("foreignId", foreignId);
         
-        return this.payTVBill(Hubtel.getGoTvBillUrl(), hashMap);
+        return this.payBill(Hubtel.getGoTvBillUrl(), hashMap);
     }
 
     @Override
@@ -183,9 +198,87 @@ public class HubtelVend implements PaymentInterface {
         hashMap.put("token", hubtel.getToken());
         hashMap.put("foreignId", foreignId);
         
-        return this.payTVBill(Hubtel.getDstvBoBillPaymentUrl(), hashMap);
+        return this.payBill(Hubtel.getDstvBoBillPaymentUrl(), hashMap);
+    }
+    
+    @Override
+    public BillPaymentReceipt payBusyBundle(String account, String foreignId, Busy busy) throws IOException {
+        HashMap<String, Object> hashMap = new HashMap<>();
+        
+        Bundle bundle = busy.getPaymentBundle();
+        
+        hashMap.put("account", account);
+        hashMap.put("amount", bundle.getValue());
+        hashMap.put("bundle", bundle.getBundle());
+        hashMap.put("token", hubtel.getToken());
+        hashMap.put("foreignId", foreignId);
+        
+        return this.payBill(Hubtel.getBusyBundleUrl(), hashMap);
     }
 
+    @Override
+    public BillPaymentReceipt payTvLicense(String account, double amount, String foreignId) throws IOException {
+        HashMap<String, Object> hashMap = new HashMap<>();
+        
+        hashMap.put("account", account);
+        hashMap.put("amount", amount);
+        hashMap.put("token", hubtel.getToken());
+        hashMap.put("foreignId", foreignId);
+        
+        return this.payBill(Hubtel.getTvLicenseUrl(), hashMap);
+    }
+
+    @Override
+    public BillPaymentReceipt payVodafoneBill(String account, double amount, VodafoneService service, String foreignId) throws IOException {
+        HashMap<String, Object> hashMap = new HashMap<>();
+        
+        hashMap.put("account", account);
+        hashMap.put("amount", amount);
+        hashMap.put("token", hubtel.getToken());
+        hashMap.put("service", service.getServiceName());
+        hashMap.put("foreignId", foreignId);
+        
+        return this.payBill(Hubtel.getVodafoneBillUrl(), hashMap);
+    }
+
+    @Override
+    public BillPaymentReceipt payMtnPostpaidBill(String phone, double amount, MtnService service, String foreignId) throws IOException {
+        HashMap<String, Object> hashMap = new HashMap<>();
+        
+        hashMap.put("phone", phone);
+        hashMap.put("amount", amount);
+        hashMap.put("token", hubtel.getToken());
+        hashMap.put("service", service.getServiceName());
+        hashMap.put("foreignId", foreignId);
+        
+        return this.payBill(Hubtel.getMtnPostpaidUrl(), hashMap);
+    }
+
+    @Override
+    public BillPaymentReceipt payEcgPostPaidBill(String account, double amount, String name, String foreignId) throws IOException {
+        HashMap<String, Object> hashMap = new HashMap<>();
+        
+        hashMap.put("account", account);
+        hashMap.put("amount", amount);
+        hashMap.put("token", hubtel.getToken());
+        hashMap.put("name", name);
+        hashMap.put("foreignId", foreignId);
+        
+        return this.payBill(Hubtel.getEcgPostpaidBillPaymentUrl(), hashMap);
+    }
+
+    @Override
+    public BillPaymentReceipt payAeroAirlineTicket(String account, double amount, String foreignId) throws IOException {
+        HashMap<String, Object> hashMap = new HashMap<>();
+        
+        hashMap.put("account", account);
+        hashMap.put("amount", amount);
+        hashMap.put("token", hubtel.getToken());
+        hashMap.put("foreignId", foreignId);
+        
+        return this.payBill(Hubtel.getAeroAirlineTicketUrl(), hashMap);
+    }
+          
     @Override
     public Surfline getUserSurflineInfo(String number) throws IOException {
         Surfline surfline = new Surfline();    
@@ -231,57 +324,5 @@ public class HubtelVend implements PaymentInterface {
     @Override
     public Vodafone getUserVodafoneInfo(String account) throws IOException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void paySurflineBundle(Surfline surfline) throws IOException {
-        if (surfline.getPaymentBundle() != null) {
-            System.out.println("Purchasing Surfline data " + surfline.getPaymentBundle() + " for device: " + surfline.getDevice());
-            this.makeBundlePayment(DataVendors.GH_SURFLINE, surfline.getDevice(), surfline.getPaymentBundle());
-        } else {
-            System.err.println("No bundle specified.");
-        }
-    }
-
-    @Override
-    public void payBusyBundle(Busy busy) throws IOException {
-        if (busy.getPaymentBundle() != null) {
-            System.out.println("Purchasing Busy data " + busy.getPaymentBundle() + " for device: " + busy.getFirstname() + " " + busy.getLastname());
-            this.makeBundlePayment(DataVendors.GH_BUSY, busy.getMsisdn(), busy.getPaymentBundle());
-        } else {
-            System.err.println("No bundle specified");
-        }        
-    }
-
-    @Override
-    public void payVodafoneBundle() throws IOException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    
-    private void makeBundlePayment(DataVendors vendor, String account, Bundle bundle) throws IOException {
-
-        StringBuilder builder = new StringBuilder();
-        
-        builder.append("{");
-        builder.append("\"amount\": \"").append(bundle.getValue()).append("\", ");
-        builder.append("\"bundle\": \"").append(bundle.getBundle()).append("\", ");
-        builder.append("\"token\": \"").append(hubtel.getToken()).append("\" ");
-        builder.append("\"").append(vendor.getVendorPurhasePrefix()).append("\": ")
-                .append(account)
-                .append("\", ");
-        builder.append("}");
-        
-        MediaType mediaType = MediaType.parse("application/json");
-        RequestBody body = RequestBody.create(mediaType, builder.toString());
-        
-        Request request = new Request.Builder()
-          .url(Hubtel.getPaymentEndpointUrl(vendor))
-          .post(body)
-          .addHeader("accept", "application/json")
-          .addHeader("content-type", "application/json")
-          .build();
-
-        Response response = client.newCall(request).execute();
-    }
-    
+    }    
 }

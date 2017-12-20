@@ -38,6 +38,33 @@ public class Hubtel {
     public static String getDstvBoBillPaymentUrl() {
         return bundleUrl + "/dstvbo";
     }
+    public static String getSurflineBundleUrl() {
+        return bundleUrl + "/surfline";
+    }
+
+    public static String getBusyBundleUrl() {
+        return bundleUrl + "/busy";
+    }
+
+    public static String getTvLicenseUrl() {
+        return bundleUrl + "/tvlicense";
+    }
+
+    public static String getVodafoneBillUrl() {
+        return bundleUrl + "/vodafone";
+    }
+
+    public static String getMtnPostpaidUrl() {
+        return bundleUrl + "/mtn";
+    }
+
+    public static String getEcgPostpaidBillPaymentUrl() {
+        return bundleUrl + "/ecg";
+    }
+
+    public static String getAeroAirlineTicketUrl() {
+        return bundleUrl + "/aero";
+    }
     private final String token;
     private final String base64StringPass;
     
