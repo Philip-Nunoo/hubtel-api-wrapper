@@ -6,14 +6,15 @@
 package com.phil.hubtelpaymentapi;
 
 import com.phil.hubtelpaymentapi.Hub.DataVendors;
-import com.phil.hubtelpaymentapi.pojos.Surfline;
+import com.phil.hubtelpaymentapi.models.Surfline;
 import com.phil.hubtelpaymentapi.Hub.HubtelNetworks;
 import com.phil.hubtelpaymentapi.exceptions.PaymentException;
 import com.phil.hubtelpaymentapi.interfaces.PaymentInterface;
-import com.phil.hubtelpaymentapi.pojos.Bundle;
-import com.phil.hubtelpaymentapi.pojos.Busy;
-import com.phil.hubtelpaymentapi.pojos.VendBalance;
-import com.phil.hubtelpaymentapi.pojos.Vodafone;
+import com.phil.hubtelpaymentapi.models.Bundle;
+import com.phil.hubtelpaymentapi.models.Busy;
+import com.phil.hubtelpaymentapi.models.BillPaymentReceipt;
+import com.phil.hubtelpaymentapi.models.VendBalance;
+import com.phil.hubtelpaymentapi.models.Vodafone;
 import com.phil.hubtelpaymentapi.responses.AirtimePurchaseResponse;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
@@ -21,6 +22,10 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import org.json.JSONObject;
 
 /**
@@ -37,6 +42,44 @@ public class HubtelVend implements PaymentInterface {
         this.client = new OkHttpClient();
     }
 
+    private BillPaymentReceipt payTVBill(String url, HashMap<String, Object> hmap) throws IOException {
+        StringBuilder builder = new StringBuilder();
+        BillPaymentReceipt dstvReceipt = new BillPaymentReceipt();
+        
+        Set set = hmap.entrySet();
+        Iterator iterator = set.iterator();
+        builder.append("{");
+        
+        while (iterator.hasNext()) {
+            Map.Entry mentry = (Map.Entry)iterator.next();
+            builder.append("\"").append(mentry.getKey()).append("\": \"").append(mentry.getValue());
+            
+            if (iterator.hasNext())
+                builder.append("\", ");
+            else
+                builder.append("\"");
+        }
+        
+        builder.append("}");
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(mediaType, builder.toString());
+        
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .addHeader("accept", "application/json")
+                .addHeader("content-type", "application/json")
+                .addHeader("authorization", hubtel.getBase64StringPass())
+                .build();
+        
+        Response response = client.newCall(request).execute();
+        // todo: check 404
+        JSONObject jSONObject = new JSONObject(response.body().string());
+        
+        dstvReceipt.setAttributesFromJsonObject(jSONObject);
+        return dstvReceipt;
+    }
+    
     @Override
     public VendBalance checkVendBalance() throws IOException {
         VendBalance balance = null;
@@ -104,6 +147,43 @@ public class HubtelVend implements PaymentInterface {
         purchaseResponse.setAttributesFromJsonObject(response.code(), jSONObject);
         
         return purchaseResponse;
+    }
+
+    @Override
+    public BillPaymentReceipt payDstvBill(String account, double amount, String foreignId) throws IOException {
+        HashMap<String, Object> hashMap = new HashMap<>();
+        
+        hashMap.put("account", account);
+        hashMap.put("amount", amount);
+        hashMap.put("token", hubtel.getToken());
+        hashMap.put("foreignId", foreignId);
+        
+        return this.payTVBill(Hubtel.getDstvBillPaymentUrl(), hashMap);
+        // return this.payTVBill(Hubtel.getDstvBillPaymentUrl(), account, amount, foreignId);
+    }
+
+    @Override
+    public BillPaymentReceipt payGoTvBill(String account, double amount, String foreignId) throws IOException {
+        HashMap<String, Object> hashMap = new HashMap<>();
+        
+        hashMap.put("account", account);
+        hashMap.put("amount", amount);
+        hashMap.put("token", hubtel.getToken());
+        hashMap.put("foreignId", foreignId);
+        
+        return this.payTVBill(Hubtel.getGoTvBillUrl(), hashMap);
+    }
+
+    @Override
+    public BillPaymentReceipt payDstvBoBill(String account, double amount, String foreignId) throws IOException {
+        HashMap<String, Object> hashMap = new HashMap<>();
+        
+        hashMap.put("account", account);
+        hashMap.put("amount", amount);
+        hashMap.put("token", hubtel.getToken());
+        hashMap.put("foreignId", foreignId);
+        
+        return this.payTVBill(Hubtel.getDstvBoBillPaymentUrl(), hashMap);
     }
 
     @Override

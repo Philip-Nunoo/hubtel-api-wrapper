@@ -7,10 +7,11 @@ package com.phil.hubtelpaymentapi.interfaces;
 
 import com.phil.hubtelpaymentapi.Hub.HubtelNetworks;
 import com.phil.hubtelpaymentapi.exceptions.PaymentException;
-import com.phil.hubtelpaymentapi.pojos.Busy;
-import com.phil.hubtelpaymentapi.pojos.Surfline;
-import com.phil.hubtelpaymentapi.pojos.VendBalance;
-import com.phil.hubtelpaymentapi.pojos.Vodafone;
+import com.phil.hubtelpaymentapi.models.Busy;
+import com.phil.hubtelpaymentapi.models.BillPaymentReceipt;
+import com.phil.hubtelpaymentapi.models.Surfline;
+import com.phil.hubtelpaymentapi.models.VendBalance;
+import com.phil.hubtelpaymentapi.models.Vodafone;
 import com.phil.hubtelpaymentapi.responses.AirtimePurchaseResponse;
 import java.io.IOException;
 
@@ -38,6 +39,36 @@ public interface PaymentInterface {
      * @throws java.io.IOException
      */
     public AirtimePurchaseResponse purchaseAirtime(String phoneNumber, HubtelNetworks network, double amount, String foreignId) throws PaymentException, IOException;
+    
+    /**
+     * Pay for DSTV bill
+     * @param account
+     * @param amount
+     * @param foreignId
+     * @return 
+     * @throws java.io.IOException
+     */
+    public BillPaymentReceipt payDstvBill(String account, double amount, String foreignId) throws IOException;
+    
+    /**
+     * Pay for GoTv bill
+     * @param account
+     * @param amount
+     * @param foreignId
+     * @return 
+     * @throws java.io.IOException
+     */
+    public BillPaymentReceipt payGoTvBill(String account, double amount, String foreignId) throws IOException;
+    
+    /**
+     * Pay for DSTVbo bill
+     * @param account
+     * @param amount
+     * @param foreignId
+     * @return 
+     * @throws java.io.IOException
+     */
+    public BillPaymentReceipt payDstvBoBill(String account, double amount, String foreignId) throws IOException;
     
     /**
      * get Surfline user data info 

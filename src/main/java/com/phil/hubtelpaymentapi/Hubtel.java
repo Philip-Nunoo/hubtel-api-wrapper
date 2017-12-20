@@ -29,7 +29,15 @@ public class Hubtel {
     public static String getVendBalanceUrl(String token) {
         return bundleUrl + "/balance/" + token;
     }
-    
+    public static String getDstvBillPaymentUrl() {
+        return bundleUrl + "/dstv";
+    }
+    public static String getGoTvBillUrl() {
+        return bundleUrl + "/gotv";
+    }
+    public static String getDstvBoBillPaymentUrl() {
+        return bundleUrl + "/dstvbo";
+    }
     private final String token;
     private final String base64StringPass;
     
