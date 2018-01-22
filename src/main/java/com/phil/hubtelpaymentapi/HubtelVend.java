@@ -77,7 +77,7 @@ public class HubtelVend implements PaymentInterface {
         // todo: check 404
         JSONObject jSONObject = new JSONObject(response.body().string());
         
-        dstvReceipt.setAttributesFromJsonObject(jSONObject);
+        dstvReceipt.setAttributesFromJsonObject(response.code(), jSONObject);
         return dstvReceipt;
     }
     
@@ -159,7 +159,6 @@ public class HubtelVend implements PaymentInterface {
         hashMap.put("foreignId", foreignId);
         
         return this.payBill(Hubtel.getDstvBillPaymentUrl(), hashMap);
-        // return this.payTVBill(Hubtel.getDstvBillPaymentUrl(), account, amount, foreignId);
     }
     
     @Override

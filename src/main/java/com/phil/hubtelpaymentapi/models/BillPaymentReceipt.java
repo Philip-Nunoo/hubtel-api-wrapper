@@ -5,6 +5,7 @@
  */
 package com.phil.hubtelpaymentapi.models;
 
+import com.phil.hubtelpaymentapi.responses.BillPaymentErrorResponse;
 import org.json.JSONObject;
 
 /**
@@ -16,7 +17,8 @@ public class BillPaymentReceipt {
     private String customer;
     private String foreignId;
     private String providerId;
-
+    private BillPaymentErrorResponse errorResponse;
+    
     public String getId() {
         return id;
     }
@@ -24,6 +26,16 @@ public class BillPaymentReceipt {
     public void setId(String id) {
         this.id = id;
     }
+
+    public BillPaymentErrorResponse getErrorResponse() {
+        return errorResponse;
+    }
+
+    public void setErrorResponse(BillPaymentErrorResponse errorResponse) {
+        this.errorResponse = errorResponse;
+    }
+    
+    
 
     public String getCustomer() {
         return customer;
@@ -49,10 +61,15 @@ public class BillPaymentReceipt {
         this.providerId = providerId;
     }
     
-    public void setAttributesFromJsonObject(JSONObject jSONObject) {
-        this.id = jSONObject.getString("Id");
-        this.customer = jSONObject.getString("Customer");
-        this.foreignId = jSONObject.getString("ForeignId");
-        this.providerId = jSONObject.getString("ProviderId");
+    public void setAttributesFromJsonObject(int code, JSONObject jSONObject) {
+        if (code > 200) {
+            errorResponse.setAttributesFromJsonObject(jSONObject);
+        } else {
+            errorResponse = null;
+//            this.id = jSONObject.getString("Id");
+//            this.customer = jSONObject.getString("Customer");
+//            this.foreignId = jSONObject.getString("ForeignId");
+//            this.providerId = jSONObject.getString("ProviderId");
+        }
     }
 }
